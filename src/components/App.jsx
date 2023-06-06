@@ -15,15 +15,27 @@ class App extends Component {
     filter: '',
   };
 
-  userName = (data) => {
+  isDuplicateContact = (name) => {
     const { contacts } = this.state;
+    return contacts.some((contact) => contact.name.toLowerCase() === name.toLowerCase());
+  };
+
+  addNewContact = (data) => {
+    const { name } = data;
+
+    if (this.isDuplicateContact(name)) {
+      alert('Contact with the same name already exists!');
+      return;
+    }
+
     const newUser = {
       ...data,
       id: nanoid()
     };
-    this.setState({
-      contacts: [...contacts, newUser],
-    });
+
+    this.setState((prevState) => ({
+      contacts: [...prevState.contacts, newUser],
+    }));
   };
 
   handleFilterChange = (e) => {
@@ -49,7 +61,7 @@ class App extends Component {
     return (
       <div className="container">
         <h1>Phonebook</h1>
-        <ContactForm userName={this.userName} contacts={this.state.contacts} />
+        <ContactForm addNewContact={this.addNewContact} />
         <h2>Contacts</h2>
         <Filter filter={this.state.filter} handleFilterChange={this.handleFilterChange} />
         <ContactList filteredContacts={filteredContacts} onDeleteContact={this.handleDeleteContact}/>
